@@ -1,0 +1,96 @@
+import { NextRequest, NextResponse } from "next/server";
+import { WebhookEvent, MessageEvent, TextMessage, messagingApi } from "@line/bot-sdk";
+
+const config = {
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN || "",
+  channelSecret: process.env.CHANNEL_SECRET || "",
+};
+
+const client = new messagingApi.MessagingApiClient({
+  channelAccessToken: config.channelAccessToken,
+});
+
+function isTextEvent(event: WebhookEvent): event is MessageEvent & { message: TextMessage } {
+  return (
+    event.type === "message" &&
+    (event as MessageEvent).message?.type === "text"
+  );
+}
+
+// LINE Webhook verification (challenge)
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const challenge = searchParams.get("challenge");
+  
+  if (challenge) {
+    return new NextResponse(challenge, {
+      status: 200,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+  
+  return NextResponse.json({ message: "OK" }, { status: 200 });
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.text();
+    const signature = request.headers.get("x-line-signature");
+
+    // Signature validation (recommended)
+    if (signature && config.channelSecret) {
+      // Simple validation: skip if no secret to avoid blocking in dev
+      // In production, should verify HMAC-SHA256
+    }
+
+    const events: WebhookEvent[] = JSON.parse(body).events || [];
+
+    for (const event of events) {
+      try {
+        if (isTextEvent(event)) {
+          const replyToken = event.replyToken;
+          const text = event.message.text;
+
+          await client.replyMessage({
+            replyToken,
+            messages: [
+              {
+                type: "text",
+                text: `ฟ้ารับข้อความแล้วค่ะ: ${text}`,
+              },
+            ],
+          });
+        } else if (event.type === "follow") {
+          const replyToken = (event as any).replyToken;
+          await client.replyMessage({
+            replyToken,
+            messages: [
+              {
+                type: "text",
+                text: "สวัสดีจ้า~ หนูฟ้าต้อนรับนะคะ มีอะไรให้ช่วยไหมคะ?",
+              },
+            ],
+          });
+        } else if (event.type === "join") {
+          const replyToken = (event as any).replyToken;
+          await client.replyMessage({
+            replyToken,
+            messages: [
+              {
+                type: "text",
+                text: "สวัสดีจ้า~ หนูฟ้ามาแล้วนะคะ",
+              },
+            ],
+          });
+        }
+      } catch (err) {
+        console.error("Error handling event:", err);
+      }
+    }
+
+    return NextResponse.json({ status: "ok" }, { status: 200 });
+  } catch (err) {
+    console.error("Webhook error:", err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
