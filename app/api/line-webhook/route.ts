@@ -73,9 +73,8 @@ export async function POST(request: NextRequest) {
             ],
           });
         } else if (event.type === "follow") {
-          const replyToken = (event as any).replyToken;
           await client.replyMessage({
-            replyToken,
+            replyToken: event.replyToken,
             messages: [
               {
                 type: "text",
@@ -84,9 +83,8 @@ export async function POST(request: NextRequest) {
             ],
           });
         } else if (event.type === "join") {
-          const replyToken = (event as any).replyToken;
           await client.replyMessage({
-            replyToken,
+            replyToken: event.replyToken,
             messages: [
               {
                 type: "text",
