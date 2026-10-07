@@ -1,4 +1,4 @@
-# LINE OA Bot (ฟ้า)
+# LINE OA Bot (Nexus)
 
 LINE Official Account Webhook สำหรับ Next.js 16 App Router (Deploy บน Vercel)
 

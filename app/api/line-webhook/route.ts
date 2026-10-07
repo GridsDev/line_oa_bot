@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
             messages: [
               {
                 type: "text",
-                text: "สวัสดีจ้า~ หนูฟ้าต้อนรับนะคะ มีอะไรให้ช่วยไหมคะ?",
+                text: "สวัสดีจ้า~ Nexus ต้อนรับนะคะ มีอะไรให้ช่วยไหมคะ?",
               },
             ],
           });
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
             messages: [
               {
                 type: "text",
-                text: "สวัสดีจ้า~ หนูฟ้ามาแล้วนะคะ",
+                text: "สวัสดีจ้า~ Nexus มาแล้วนะคะ",
               },
             ],
           });
