@@ -1,6 +1,6 @@
 # LINE OA Bot (ฟ้า)
 
-LINE Official Account Webhook สำหรับ vessuyan/Next.js App Router
+LINE Official Account Webhook สำหรับ Next.js 16 App Router (Deploy บน Vercel)
 
 ## Setup
 
